@@ -1,6 +1,5 @@
 # neighborhood_web_scraping.py
 # this script web scrapes the 
-# ZWID =  X1-ZWz1hj43m8rojv_1ekgn
 
 
 # import requests
@@ -14,7 +13,6 @@ import datetime as dt
 import os 
 import pandas as pd
 import numpy as np
-
 
 # webscrape the urban and suburban regions 
 req = Request('https://www.liveurbandenver.com/areas/urban', headers={'User-Agent': 'Mozilla/5.0'})
@@ -48,20 +46,21 @@ print(suburb_neighborhood_sample)
 
 
 
-# # zillow GetRegionChildren API
-# # Define the MongoDB database and table
-# db_client = MongoClient('localhost', 27017)
-# db = db_client['zillow-api']
-# table = db['regionChildren']
+# zillow GetRegionChildren API
+# Define the MongoDB database and table
+db_client = MongoClient('localhost', 27017)
+db = db_client['zillow-api']
+table = db['deepSearchResults']
 
 
-
-# def single_query(link, payload):
-#     response = requests.get(link, params=payload)
-#     if response.status_code != 200:
-#         print('WARNING', response.status_code)
-#     else:
-#         return response.text
+# api returns htm file (html)
+# loop through to sample
+def single_query(link, payload):
+    response = requests.get(link, params=payload)
+    if response.status_code != 200:
+        print('WARNING', response.status_code)
+    else:
+        return response.text
 
 def verify_cities(region_name):
     # region_name = dataframe['RegionName']
@@ -77,29 +76,34 @@ def verify_cities(region_name):
 
 
 if __name__ == '__main__':
-#     api_url_base = 'http://www.zillow.com/webservice/GetRegionChildren.htm'
-#     # payload = {'zws-id': os.environ['ZWID_API_KEY'], 'state':'co', 'childtype':'city'}
-#     html_str = single_query(api_url_base, payload)
-#     html_soup = BeautifulSoup(html_str, features="lxml")
-#     regionAllCity = html_soup.find_all('name')
+
+
+    # print(os.environ)
+
+    api_url_base = 'http://www.zillow.com/webservice/GetDeepSearchResults.htm'
+    payload = {'zws-id': os.environ['ZWID_API_KEY'], 'address': '4501 E 136th Pl', 'citystatezip':' Thornton CO'}
+    html_str = single_query(api_url_base, payload)
+    print(html_str)
+    html_soup = BeautifulSoup(html_str, features="lxml")
+    regionAllCity = html_soup.find_all('name')
     
-#     suburb_dict = {}
-#     for k in suburban_lst:
-#         suburb_dict[k] = 0
+    suburb_dict = {}
+    for k in suburban_lst:
+        suburb_dict[k] = 0
 
 
-#     all_city_lst = []    
-#     for i in regionAllCity:
-#         all_city_lst.append(i.text)
+    all_city_lst = []    
+    for i in regionAllCity:
+        all_city_lst.append(i.text)
 
 
-#     for k in suburb_dict:
-#         if k in all_city_lst:
-#             # zillow-api contains data on that city
-#             suburb_dict[k] = 1
-#         else:
-#             # no data found for that specific data
-#             continue
+    for k in suburb_dict:
+        if k in all_city_lst:
+            # zillow-api contains data on that city
+            suburb_dict[k] = 1
+        else:
+            # no data found for that specific data
+            continue
     
     # dataset of homes in colorado
     df = pd.read_csv('/Users/isaacramirez/code/dsi/capstone-I/Addresses/zillow/City_Zhvi_TopTier.csv', encoding='latin-1')
@@ -111,6 +115,6 @@ if __name__ == '__main__':
 
     by_region['urbanOrSuburb'] = by_region.apply(lambda row: verify_cities(row[0]), axis=1)
 
-    # print(urban_lst)
-    # print(suburban_lst)
+    print(urban_lst)
+    print(suburban_lst)
 
