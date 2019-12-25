@@ -10,32 +10,32 @@ sc = spark.sparkContext
 get_ipython().system('ls')
 
 
-aurora_df = spark.read.csv('aurora_addresses.csv',
+aurora_df = spark.read.csv('/home/jovyan/work/code/dsi/capstone-I/data/suburban/aurora_addresses.csv',
                          header=True,       # use headers or not
                          quote='"',         # char for quotes
                          sep=",",           # char for separation
                          inferSchema=True)
 
-boulder_df = spark.read.csv('Boulder_addresses.csv',
+boulder_df = spark.read.csv('/home/jovyan/work/code/dsi/capstone-I/data/suburban/Boulder_addresses.csv',
                             header=True,
                             quote='"',
                             sep=",",
                             inferSchema=True)
 
-broomfield_df = spark.read.csv('Broomfield-Addresses.csv',
+broomfield_df = spark.read.csv('/home/jovyan/work/code/dsi/capstone-I/data/suburban/Broomfield-Addresses.csv',
                             header=True,
                             quote='"',
                             sep=",",
                             inferSchema=True)
 
 
-centennial_df = spark.read.csv('centennial_addresses.csv',
+centennial_df = spark.read.csv('/home/jovyan/work/code/dsi/capstone-I/data/suburban/centennial_addresses.csv',
                             header=True,
                             quote='"',
                             sep=",",
                             inferSchema=True)
 
-thornton_df = spark.read.csv('thornton_Addresses.csv',
+thornton_df = spark.read.csv('/home/jovyan/work/code/dsi/capstone-I/data/suburban/thornton_Addresses.csv',
                             header=True,
                             quote='"',
                             sep=",",
@@ -59,8 +59,9 @@ aurora_sample = aurora_df.select('address', 'city').filter(col('CITY') == 'Auror
 
 
 # create new dataframe yoooo
-aurora_sample_df = spark.createDataFrame(aurora_sample).show()
+aurora_sample_df = spark.createDataFrame(aurora_sample)
 
+print(aurora_sample_df.show())
 
 # aurora_df.select('ADDRESS').show()
 # In[51]:
@@ -77,9 +78,9 @@ boulder_sample = boulder_df.select('address', 'city').filter(col('CITY') == 'BOU
 
 
 # create new dataframe yoooo
-boulder_sample_df = spark.createDataFrame(boulder_sample).show()
+boulder_sample_df = spark.createDataFrame(boulder_sample)
 
-
+print(boulder_sample_df.show())
 
 
 # broomfield_df.printSchema()
@@ -98,12 +99,12 @@ broomfield_sample = broomfield_df.select('address', 'city').filter(col('CITY') =
 
 
 # create new dataframe yoooo
-broomfield_sample_df = spark.createDataFrame(broomfield_sample).show()
-
+broomfield_sample_df = spark.createDataFrame(broomfield_sample)
+print(broomfield_sample_df.show())
 
 
 # centennial_df.printSchema()
-centennial_df.select('city').show()
+centennial_df.select('city')
 
 
 # filter((!col("Name2").rlike("[0-9]")) | (col("Name2").isNotNull))
@@ -119,8 +120,8 @@ centennial_sample = centennial_df.select('address', 'city').filter((col('IS_RESI
 # centennial_df.select('FULLADDR', 'IS_RESIDENTIAL').filter(col('IS_RESIDENTIAL') == 'RES').show()
 
 # create new dataframe yoooo
-centennial_sample_df = spark.createDataFrame(centennial_sample).show()
-
+centennial_sample_df = spark.createDataFrame(centennial_sample)
+print(centennial_sample_df.show())
 # In[42]:
 
 
@@ -137,9 +138,8 @@ thornton_sample = thornton_df.select('address', 'city').filter(col('CITY') == 'T
 
 
 # create new dataframe yoooo
-thornton_sample_df = spark.createDataFrame(thornton_sample).show()
+thornton_sample_df = spark.createDataFrame(thornton_sample)
 # In[ ]:
 
 
-
-
+print(thornton_sample_df.show())

@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
-
 import pyspark as ps
 from pyspark.sql.types import IntegerType
 spark = ps.sql.SparkSession.builder.master("local[4]").appName("Colorado-Addresess").getOrCreate()
 sc = spark.sparkContext
 
 
-df = spark.read.csv('urbanAddresses.csv',
+df = spark.read.csv('/home/jovyan/work/code/dsi/capstone-I/data/urban/urbanAddresses.csv',
                          header=True,       # use headers or not
                          quote='"',         # char for quotes
                          sep=",",           # char for separation
@@ -26,7 +25,9 @@ df_sample = df.select('address').distinct().rdd.takeSample(False, 1000, seed=463
 
 
 # create new dataframe yoooo
-new_df = spark.createDataFrame(df_sample).show()
+new_df = spark.createDataFrame(df_sample)
+
+print(new_df.show())
 
 
 # df.select('STREET_NAME').rdd.takeSample(False, 250, seed=0)
