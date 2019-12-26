@@ -15,10 +15,7 @@ import pandas as pd
 import numpy as np
 
 
-import pyspark as ps
-from pyspark.sql.types import IntegerType
-spark = ps.sql.SparkSession.builder.master("local[4]").appName("Colorado-Addresess").getOrCreate()
-sc = spark.sparkContext
+
 
 # # webscrape the urban and suburban regions 
 # req = Request('https://www.liveurbandenver.com/areas/urban', headers={'User-Agent': 'Mozilla/5.0'})
