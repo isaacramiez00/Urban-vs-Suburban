@@ -12,14 +12,13 @@ import pandas as pd
 import numpy as np
 
 
-def address_sample_df(df, addressColumn, city, state='co', filterDict={}, replaceColumnName='address', sample=20, seed=463):
+def address_sample_df(df, addressColumn, city, state='co', filterDict={}, replaceColumnName='address', sample=200, seed=463):
     ''' 
     column is the address column: address STRtype
     expecting a dictionary for filter of: {columnName: columnsValue}
     city = str (allLowerCase)
     '''
     # filter
-    # breakpoint()
     if bool(filterDict):
         for k, v in filterDict.items():
             df = df.filter(col(k) == v)
@@ -131,6 +130,13 @@ def deep_search_sample(df):
 
     return deep_search_df
 
+def clean_api_dataframe(df):
+
+    to_numeric = ['amount', 'bedrooms', 'bathrooms', 'taxassessment', 'latitude', 'longitude']
+
+    for col in to_numeric:
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+
 
 if __name__ == "__main__":
        
@@ -161,15 +167,16 @@ if __name__ == "__main__":
 
     # denver - urban
     urban_denver_df = spark_df('/home/jovyan/work/code/dsi/capstone-I/data/urban/urbanAddresses.csv')
-    urban_denver_df = address_sample_df(urban_denver_df, 'FULL_ADDRESS', 'denver', sample=1000)
+    urban_denver_df = address_sample_df(urban_denver_df, 'FULL_ADDRESS', 'denver', sample=10)
 
     # concat suburban dfs
     suburbs = [centennial_df, thornton_df, broomfield_df, boulder_df, aurora_df]
     suburbs_df = pd.concat(suburbs, ignore_index=True)
 
     # testing functions
-    test = deep_search_sample(suburbs_df)
-    # print(test.info())
+    # suburbs_df = deep_search_sample(suburbs_df)
+    urban_denver_df = deep_search_sample(urban_denver_df)
+    print('dataframes created')
 
 
 
