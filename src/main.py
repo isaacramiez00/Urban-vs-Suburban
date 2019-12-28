@@ -106,7 +106,7 @@ def deep_search_sample(df):
               citystatezip_param = df.loc[i, 'city'] + ' ' + df.loc[i, 'state']
 
               # upload data as param
-              payload = {'zws-id':'X1-ZWz1hj43m8rojv_1ekgn', 'address': address_param, 'citystatezip':citystatezip_param}
+              payload = {'zws-id':os.environ['ZWID_API_KEY'], 'address': address_param, 'citystatezip':citystatezip_param}
 
               # uploads api
               current_house_info = single_query(api_url_base, payload)
