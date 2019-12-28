@@ -1,145 +1,172 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-
 import pyspark as ps
 from pyspark.sql.functions import col
-
-spark = ps.sql.SparkSession.builder.master("local[4]").appName("Colorado-Addresess").getOrCreate()
-sc = spark.sparkContext
-get_ipython().system('ls')
-
-
-aurora_df = spark.read.csv('/home/jovyan/work/code/dsi/capstone-I/data/suburban/aurora_addresses.csv',
-                         header=True,       # use headers or not
-                         quote='"',         # char for quotes
-                         sep=",",           # char for separation
-                         inferSchema=True)
-
-boulder_df = spark.read.csv('/home/jovyan/work/code/dsi/capstone-I/data/suburban/Boulder_addresses.csv',
-                            header=True,
-                            quote='"',
-                            sep=",",
-                            inferSchema=True)
-
-broomfield_df = spark.read.csv('/home/jovyan/work/code/dsi/capstone-I/data/suburban/Broomfield-Addresses.csv',
-                            header=True,
-                            quote='"',
-                            sep=",",
-                            inferSchema=True)
+from pyspark.sql.types import IntegerType
+from pyspark.sql.functions import lit
+from urllib.request import Request, urlopen
+from bs4 import BeautifulSoup
+import requests
+import json
+import datetime as dt
+import os 
+import pandas as pd
+import numpy as np
 
 
-centennial_df = spark.read.csv('/home/jovyan/work/code/dsi/capstone-I/data/suburban/centennial_addresses.csv',
-                            header=True,
-                            quote='"',
-                            sep=",",
-                            inferSchema=True)
+def address_sample_df(df, addressColumn, city, state='co', filterDict={}, replaceColumnName='address', sample=200, seed=463):
+       ''' 
+       column is the address column: address STRtype
+       expecting a dictionary for filter of: {columnName: columnsValue}
+       city = str (allLowerCase)
+       '''
+       # filter
+       # breakpoint()
+       if bool(filterDict):
+              for k, v in filterDict.items():
+                     df = df.filter(col(k) == v)
+       
+       # rename columns
+       df = df.withColumnRenamed(addressColumn, replaceColumnName)
 
-thornton_df = spark.read.csv('/home/jovyan/work/code/dsi/capstone-I/data/suburban/thornton_Addresses.csv',
-                            header=True,
-                            quote='"',
-                            sep=",",
-                            inferSchema=True)
-
-
-'''
-CREATE A FUNCTION THAT RENAMES COLUMNS, TAKES A RANDOM SAMPLE, AND CREATES A NEW DATAFRAME OF SAMPLE
-'''
-
-
-# aurora_df.printSchema()
-# aurora_df.select('CITY').show()
-
-# rename columns
-aurora_df = aurora_df.withColumnRenamed("ADDRESS", "address")\
-       .withColumnRenamed('CITY', 'city')
-
-aurora_sample = aurora_df.select('address', 'city').filter(col('CITY') == 'Aurora')\
-         .distinct().rdd.takeSample(False, 250, seed=463)
-
-
-# create new dataframe yoooo
-aurora_sample_df = spark.createDataFrame(aurora_sample)
-
-print(aurora_sample_df.show())
-
-# aurora_df.select('ADDRESS').show()
-# In[51]:
-
-# boulder_df.printSchema()
-# boulder_df.select('CITY').show()
-
-boulder_df = boulder_df.withColumnRenamed("ADDRESS", "address")\
-       .withColumnRenamed('CITY', 'city')
-
-# boulder_df.select('ADDRESS').show()
-boulder_sample = boulder_df.select('address', 'city').filter(col('CITY') == 'BOULDER')\
-          .distinct().rdd.takeSample(False, 250, seed=463)
+       # create columns
+       df = df.withColumn('city', lit(city))\
+              .withColumn('state', lit(state))
+       
+       # select distinct value for columns
+       df = df.select('address', 'city', 'state').distinct()
+       
+       # random sampling
+       df = df.rdd.takeSample(False, sample, seed)
+       
+       #convert to pandas
+       df = spark.createDataFrame(df)
+       df = df.toPandas()
+       df = df.apply(lambda x: x.astype(str).str.lower())
+       # df['address'] = df['address'].apply(lambda row: row.split())
+       df = clean_wrds(df)
+       return df
 
 
-# create new dataframe yoooo
-boulder_sample_df = spark.createDataFrame(boulder_sample)
-
-print(boulder_sample_df.show())
-
-
-# broomfield_df.printSchema()
-
-# broomfield_df.select('FULL_ADDRESS').show()
-
-# rename column
-broomfield_df = broomfield_df.withColumnRenamed("FULL_ADDRESS", "address")\
-       .withColumnRenamed('CITY', 'city')
+def spark_df(filepath):
+       df = spark.read.csv(filepath,\
+                           header=True,\
+                           quote='"',
+                           sep=",",
+                           inferSchema=True)
+       return df
 
 
-broomfield_sample = broomfield_df.select('address', 'city').filter(col('CITY') == 'BROOMFIELD')\
-             .distinct().rdd.takeSample(False, 250, seed=463)
+def clean_wrds(df, col='address'):
+       '''
+       returns a df
+       '''
+       # breakpoint()
+       bad_wrds = ['bldg', 'unit', 'apt', '#', 'irrp']
+       clear_wrds = df.loc[:, col]
+       for i, lst in enumerate(clear_wrds,0):
+              # old_wrd = lst
+              lst = lst.split()
+              for wrd in lst:
+                     if wrd in bad_wrds:
+                            lst.remove(wrd)
+                            lst.pop(-1)
+                     else:
+                            continue
+              lst = ' '.join(lst)
+              df.loc[i, col] = lst
 
-# broomfield_df.select('CITY').show()
-
-
-# create new dataframe yoooo
-broomfield_sample_df = spark.createDataFrame(broomfield_sample)
-print(broomfield_sample_df.show())
-
-
-# centennial_df.printSchema()
-centennial_df.select('city')
-
-
-# filter((!col("Name2").rlike("[0-9]")) | (col("Name2").isNotNull))
-# print(centennial_df.select('IS_RESIDENTIAL').count()) 
-
-#rename column
-centennial_df = centennial_df.withColumnRenamed("FULLADDR", "address")\
-       .withColumnRenamed('city', 'city')
-
-centennial_sample = centennial_df.select('address', 'city').filter((col('IS_RESIDENTIAL') == 'RES') &\
-                                                (col('city') == 'CENTENNIAL')).distinct()\
-                                                .rdd.takeSample(False, 250, seed=463)
-# centennial_df.select('FULLADDR', 'IS_RESIDENTIAL').filter(col('IS_RESIDENTIAL') == 'RES').show()
-
-# create new dataframe yoooo
-centennial_sample_df = spark.createDataFrame(centennial_sample)
-print(centennial_sample_df.show())
-# In[42]:
+       return df
 
 
-
-# thornton_df.printSchema()
-
-
-#rename column
-thornton_df = thornton_df.withColumnRenamed("address", "address")\
-       .withColumnRenamed('city', 'city')
-
-thornton_sample = thornton_df.select('address', 'city').filter(col('CITY') == 'THORNTON').distinct()\
-.rdd.takeSample(False, 250, seed=463)
-
-
-# create new dataframe yoooo
-thornton_sample_df = spark.createDataFrame(thornton_sample)
-# In[ ]:
+def single_query(link, payload):
+       '''
+       returns api xml file
+       '''
+       response = requests.get(link, params=payload)
+       if response.status_code != 200:
+              print('WARNING', response.status_code)
+       else:
+              return response.text
 
 
-print(thornton_sample_df.show())
+def deep_search_sample(df):
+       '''
+       sample through each df and store values into api df
+       reads a pandas dataframe
+       '''
+       breakpoint()
+       api_url_base = 'http://www.zillow.com/webservice/GetDeepSearchResults.htm'
+       
+    
+       # lst that will be used to create dataframe
+       lst = []
+       for i in range(df.shape[0]):
+       
+              # grabs data from df
+              address_param = df.loc[i,'address']
+              citystatezip_param = df.loc[i, 'city'] + ' ' + df.loc[i, 'state']
+
+              # upload data as param
+              payload = {'zws-id':'X1-ZWz1hj43m8rojv_1ekgn', 'address': address_param, 'citystatezip':citystatezip_param}
+
+              # uploads api
+              current_house_info = single_query(api_url_base, payload)
+              
+              # api to dataframe
+              html_soup = BeautifulSoup(current_house_info, features='html.parser')
+              
+              dict = {}
+              # creates dictionary
+              for child in html_soup.recursiveChildGenerator():
+                     if child.name in dict:
+                            continue
+                     else:
+                            dict[child.name] = html_soup.find(child.name).text
+
+              # puts in lst
+              lst.append(dict)
+
+       deep_search_df = pd.DataFrame(lst, index=[0])
+       return deep_search_df
+
+
+if __name__ == "__main__":
+       
+       # initialize apache spark
+       spark = ps.sql.SparkSession.builder.master("local[4]").appName("Colorado-Addresess").getOrCreate()
+       sc = spark.sparkContext
+       get_ipython().system('ls')
+
+       # aurora
+       aurora_df = spark_df('/home/jovyan/work/code/dsi/capstone-I/data/suburban/aurora_addresses.csv')
+       aurora_df = address_sample_df(aurora_df, 'ADDRESS', 'aurora', filterDict={'CITY':'Aurora'})
+
+       #boulder
+       boulder_df = spark.read.csv('/home/jovyan/work/code/dsi/capstone-I/data/suburban/Boulder_addresses.csv')
+       boulder_df = address_sample_df(boulder_df, '_c2', 'boulder', filterDict={'_c10': 'BOULDER'})
+
+       # broomfield
+       broomfield_df = spark.read.csv('/home/jovyan/work/code/dsi/capstone-I/data/suburban/Broomfield-Addresses.csv')
+       broomfield_df = address_sample_df(broomfield_df, '_c14', 'broomfield', filterDict={'_c36':'BROOMFIELD'})
+
+       # thornton
+       thornton_df = spark_df('/home/jovyan/work/code/dsi/capstone-I/data/suburban/thornton_Addresses.csv')
+       thornton_df = address_sample_df(thornton_df, 'ADDRESS', 'thornton', filterDict={'CITY':'THORNTON'})
+
+       # centennial
+       centennial_df = spark_df('/home/jovyan/work/code/dsi/capstone-I/data/suburban/centennial_addresses.csv')
+       centennial_df = address_sample_df(centennial_df, 'FULLADDR', 'centennial', filterDict={'IS_RESIDENTIAL':'RES', 'City':'CENTENNIAL'})       
+
+       # denver - urban
+       urban_denver_df = spark_df('/home/jovyan/work/code/dsi/capstone-I/data/urban/urbanAddresses.csv')
+       urban_denver_df = address_sample_df(urban_denver_df, 'FULL_ADDRESS', 'denver', sample=1000)
+
+       # concat suburban dfs
+       suburbs = [centennial_df, thornton_df, broomfield_df, boulder_df, aurora_df]
+       suburbs_df = pd.concat(suburbs)
+
+       # testing functions
+       test = deep_search_sample(suburbs_df)
+       # print(test.info())
+
+
+       # os.environ['ZWID_API_KEY'] *** BUGTHATNEEDSATTENTION *** key error 
