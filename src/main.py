@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 
 
-def address_sample_df(df, addressColumn, city, state='co', filterDict={}, replaceColumnName='address', sample=200, seed=463):
+def address_sample_df(df, addressColumn, city, state='co', filterDict={}, replaceColumnName='address', sample=20, seed=463):
     ''' 
     column is the address column: address STRtype
     expecting a dictionary for filter of: {columnName: columnsValue}
@@ -123,12 +123,12 @@ def deep_search_sample(df):
         for child in html_soup.recursiveChildGenerator():
             if child.name in columns:
                 dict[child.name] = html_soup.find(child.name).text
+        
+        if i == 0:
+            deep_search_df = pd.DataFrame(dict, index=[0])
+        else:
+            deep_search_df = deep_search_df.append(dict, ignore_index=True)
 
-        # puts in lst
-        lst.append(dict)
-
-    breakpoint()
-    deep_search_df = pd.DataFrame([lst], index=[0])
     return deep_search_df
 
 
