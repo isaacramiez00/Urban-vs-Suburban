@@ -59,7 +59,7 @@ def clean_wrds(df, col='address'):
     returns a df
     '''
     # breakpoint()
-    bad_wrds = ['bldg', 'unit', 'apt', '#', 'irrp']
+    bad_wrds = ['bldg', 'unit', 'apt', '#', 'irrp', 'ste']
     clear_wrds = df.loc[:, col]
     for i, lst in enumerate(clear_wrds,0):
         # old_wrd = lst
@@ -95,10 +95,7 @@ def deep_search_sample(df):
     '''
     api_url_base = 'http://www.zillow.com/webservice/GetDeepSearchResults.htm'
     
-    columns = ['zpid', 'address', 'street', 'zipcode', 'city', 'state', 'latitude', 'longitude', 'fipscounty', 'usecode',\
-               'taxassessment', 'yearbuilt', 'lotsizesqft', 'finishedsqft', 'bathrooms', 'bedrooms', 'lastsolddate',\
-               'lastsoldprice', 'amount', 'last-updated', 'valuechange', 'valuationrange', 'low', 'high', 'percentile',\
-               'zindexvalue']
+    columns = ['address','zipcode', 'city', 'state', 'latitude', 'longitude','usecode', 'bedrooms', 'amount', 'last-updated']
     
     # lst that will be used to create dataframe
     lst = []
@@ -109,7 +106,7 @@ def deep_search_sample(df):
         citystatezip_param = df.loc[i, 'city'] + ' ' + df.loc[i, 'state']
 
         # upload data as param
-        payload = {'zws-id':os.environ['ZWID_API_KEY'], 'address': address_param, 'citystatezip':citystatezip_param}
+        payload = {'zws-id':os.environ['ZWID'], 'address': address_param, 'citystatezip':citystatezip_param}
 
         # uploads api
         current_house_info = single_query(api_url_base, payload)
@@ -122,20 +119,50 @@ def deep_search_sample(df):
         for child in html_soup.recursiveChildGenerator():
             if child.name in columns:
                 dict[child.name] = html_soup.find(child.name).text
-        
+
         if i == 0:
             deep_search_df = pd.DataFrame(dict, index=[0])
         else:
             deep_search_df = deep_search_df.append(dict, ignore_index=True)
+        
+        deep_search_df = clean_api_dataframe(deep_search_df)
 
     return deep_search_df
 
 def clean_api_dataframe(df):
 
-    to_numeric = ['amount', 'bedrooms', 'bathrooms', 'taxassessment', 'latitude', 'longitude']
+    # convert string columns to numeric floats
+    to_numeric = ['amount', 'bedrooms', 'latitude', 'longitude']
 
     for col in to_numeric:
         df[col] = pd.to_numeric(df[col], errors='coerce')
+
+    return df
+
+
+def rental_dfs(filename):
+    rentals_df = pd.read_csv(filename, encoding='latin-1')
+
+    suburb_cities = ['Thornton', 'Centennial', 'Aurora', 'Boulder', 'Broomfield']
+
+    co_rentals = rentals_df[rentals_df['State']=='CO']
+    
+    all_rent_df = pd.DataFrame(co_rentals[co_rentals['RegionName']== 'Denver'])
+    for city in suburb_cities:
+        all_rent_df = all_rent_df.append(co_rentals[co_rentals['RegionName']== city])
+
+    columns = ['Date', 'RegionName', 'State', 'Zri']
+    all_rent_df = all_rent_df[columns]
+    all_rent_df.reset_index(drop=True, inplace=True)
+
+    return all_rent_df
+
+def append_rent_column():
+    
+    suburb_cities = ['thornton', 'centennial', 'aurora', 'boulder', 'broomfield']
+    pass
+
+        
 
 
 if __name__ == "__main__":
@@ -173,10 +200,15 @@ if __name__ == "__main__":
     suburbs = [centennial_df, thornton_df, broomfield_df, boulder_df, aurora_df]
     suburbs_df = pd.concat(suburbs, ignore_index=True)
 
+
+    # rental df
+    rentals_df = rental_dfs('/home/jovyan/work/code/dsi/capstone-I/data/rentals/City_Zri_AllHomesPlusMultifamily_Summary.csv')
+
+
     # testing functions
     # suburbs_df = deep_search_sample(suburbs_df)
     urban_denver_df = deep_search_sample(urban_denver_df)
-    print('dataframes created')
+    print(urban_denver_df.head())
 
 
 
