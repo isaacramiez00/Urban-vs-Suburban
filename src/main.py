@@ -59,7 +59,7 @@ def clean_wrds(df, col='address'):
     returns a df
     '''
     # breakpoint()
-    bad_wrds = ['bldg', 'unit', 'apt', '#', 'irrp', 'ste']
+    bad_wrds = ['bldg', 'unit', 'apt', '#', 'irrp', 'ste', 'lot']
     clear_wrds = df.loc[:, col]
     for i, lst in enumerate(clear_wrds,0):
         # old_wrd = lst
@@ -125,7 +125,10 @@ def deep_search_sample(df):
         else:
             deep_search_df = deep_search_df.append(dict, ignore_index=True)
         
-        deep_search_df = clean_api_dataframe(deep_search_df)
+    deep_search_df = clean_api_dataframe(deep_search_df)
+    append_suburbs_rent_column(deep_search_df)
+    mortgage_details(deep_search_df)
+    one_year_nwroi(deep_search_df)
 
     return deep_search_df
 
@@ -140,7 +143,7 @@ def clean_api_dataframe(df):
     return df
 
 
-def rental_dfs(filename):
+def create_rental_dfs(filename):
     rentals_df = pd.read_csv(filename, encoding='latin-1')
 
     suburb_cities = ['Thornton', 'Centennial', 'Aurora', 'Boulder', 'Broomfield']
@@ -153,16 +156,88 @@ def rental_dfs(filename):
 
     columns = ['Date', 'RegionName', 'State', 'Zri']
     all_rent_df = all_rent_df[columns]
+
+    # clean RegionName
+    # all_rent_df['RegionName'] = all_rent_df['RegionName'].apply(lambda x: x.lower())
+
     all_rent_df.reset_index(drop=True, inplace=True)
 
     return all_rent_df
 
-def append_rent_column():
+def append_suburbs_rent_column(df):
     
-    suburb_cities = ['thornton', 'centennial', 'aurora', 'boulder', 'broomfield']
-    pass
+    suburb_cities = ['Thornton', 'Centennial', 'Aurora', 'Boulder', 'Broomfield']
 
-        
+    # sort and set
+    suburbs_cities = suburb_cities.sort()
+    df.sort_values(by='city', inplace=True)
+    rentals_df.sort_values(by='RegionName', inplace=True)
+    rental_val = rentals_df['Zri']
+    rental_val.reset_index(drop=True, inplace=True)
+    
+    # append rentZestimate
+    for idx, city in enumerate(suburb_cities):
+        df.loc[df['city']==city, 'rent'] = rental_val[idx]
+        df['rentPerUnit'] = df['rent'] / df['bedrooms']
+        df['totalMonthlyIncome'] = df['rentPerUnit'] * df['bedrooms']
+
+    return df
+
+
+def mortgage_details(df, downPayment=0.035, interestRate=0.0366,\
+                     pmiRate=0.01, loanTerms_years=30, paymentsPerYear=12,\
+                     taxRate=0.01, insuranceRate=0.005, vacancy=100,\
+                     capitalExpenditures=100, maintenance=100):
+    '''
+    creates mortgage detail columns
+    '''
+    df['downPayment'] = df['amount'] * downPayment
+    df['loanAmount'] = df['amount'] * (1 - downPayment)   
+    df['interestRate'] = interestRate
+    df['pmiRate'] = pmiRate
+    df['loanTerm_years'] = loanTerms_years
+    df['paymentsPerYear'] = paymentsPerYear
+    df['taxRate'] = taxRate
+    df['insuranceRate'] = insuranceRate
+
+    df['monthlyInterest'] = (df['amount'] * interestRate) / 12
+    df['monthlyPrincipal'] = df['monthlyInterest'] * 0.45
+    df['monthlyP&I'] = df['monthlyInterest'] + df['monthlyPrincipal']
+    df['monthlyTaxes'] = (df['amount'] * taxRate) / 12
+    df['monthlyInsurance'] = (df['amount'] * interestRate) / 12
+    df['monthlyPMI'] = (df['amount'] * pmiRate) / 12
+    df['subTotalMonthlyPayment'] = df['monthlyP&I'] + df['monthlyTaxes'] +\
+                                df['monthlyInsurance'] + df['monthlyPMI']
+    df['vacancy'] = vacancy
+    df['capitalExpenditures'] = capitalExpenditures
+    df['maintenance'] = maintenance
+    df['subtotalMonthlyReserves'] = df['vacancy'] + df['capitalExpenditures'] +\
+                                    df['maintenance']
+    df['totalMonthlyExpenses'] = df['subTotalMonthlyPayment'] +\
+                                 df['subtotalMonthlyReserves']
+
+    return df
+
+def one_year_nwroi(df, rehabCost=20000, closingCosts=0.02, appreciation=0.06):
+
+    df['rehabCost'] = rehabCost
+    df['closingCosts'] = df['amount'] * closingCosts
+    df['initialInvestment'] = df['downPayment'] +\
+                              df['rehabCost'] +\
+                              df['closingCosts']
+
+    df['monthlyCashFlow'] = df['totalMonthlyIncome'] -\
+                            df['totalMonthlyExpenses']
+    df['yearlyLoanPaydown'] = df['monthlyPrincipal'] * 12
+    df['appreciationAmount'] = df['amount'] * appreciation
+
+    df['oneYearNWROI'] = (df['monthlyCashFlow'] +\
+                          df['yearlyLoanPaydown'] +\
+                          df['appreciationAmount']) /\
+                          df['initialInvestment']
+
+    return df
+
 
 
 if __name__ == "__main__":
@@ -194,7 +269,7 @@ if __name__ == "__main__":
 
     # denver - urban
     urban_denver_df = spark_df('/home/jovyan/work/code/dsi/capstone-I/data/urban/urbanAddresses.csv')
-    urban_denver_df = address_sample_df(urban_denver_df, 'FULL_ADDRESS', 'denver', sample=10)
+    urban_denver_df = address_sample_df(urban_denver_df, 'FULL_ADDRESS', 'denver', sample=1000)
 
     # concat suburban dfs
     suburbs = [centennial_df, thornton_df, broomfield_df, boulder_df, aurora_df]
@@ -202,14 +277,14 @@ if __name__ == "__main__":
 
 
     # rental df
-    rentals_df = rental_dfs('/home/jovyan/work/code/dsi/capstone-I/data/rentals/City_Zri_AllHomesPlusMultifamily_Summary.csv')
+    rentals_df = create_rental_dfs('/home/jovyan/work/code/dsi/capstone-I/data/rentals/City_Zri_AllHomesPlusMultifamily_Summary.csv')
 
 
     # testing functions
     # suburbs_df = deep_search_sample(suburbs_df)
+    suburbs_df = deep_search_sample(suburbs_df)
     urban_denver_df = deep_search_sample(urban_denver_df)
-    print(urban_denver_df.head())
-
+    print('all finished')    
 
 
 
