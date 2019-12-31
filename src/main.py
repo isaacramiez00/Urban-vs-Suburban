@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 
 
-def address_sample_df(df, addressColumn, city, state='co', filterDict={}, replaceColumnName='address', sample=200, seed=463):
+def address_sample_df(df, addressColumn, city, state='co', filterDict={}, replaceColumnName='address', sample=100, seed=463):
     ''' 
     column is the address column: address STRtype
     expecting a dictionary for filter of: {columnName: columnsValue}
@@ -95,10 +95,9 @@ def deep_search_sample(df):
     '''
     api_url_base = 'http://www.zillow.com/webservice/GetDeepSearchResults.htm'
     
-    columns = ['address','zipcode', 'city', 'state', 'latitude', 'longitude','usecode', 'bedrooms', 'amount', 'last-updated']
+    columns = ['address', 'amount', 'zipcode', 'city', 'state', 'latitude', 'longitude', 'usecode', 'bedrooms', 'last-updated']
     
     # lst that will be used to create dataframe
-    lst = []
     for i in range(df.shape[0]):
     
         # grabs data from df
@@ -106,7 +105,8 @@ def deep_search_sample(df):
         citystatezip_param = df.loc[i, 'city'] + ' ' + df.loc[i, 'state']
 
         # upload data as param
-        payload = {'zws-id':os.environ['ZWID'], 'address': address_param, 'citystatezip':citystatezip_param}
+        payload = {'zws-id':os.environ['ZWID'], 'address': address_param, 'citystatezip':citystatezip_param,\
+                   'rentzestimate': 'true'}
 
         # uploads api
         current_house_info = single_query(api_url_base, payload)
@@ -119,14 +119,20 @@ def deep_search_sample(df):
         for child in html_soup.recursiveChildGenerator():
             if child.name in columns:
                 dict[child.name] = html_soup.find(child.name).text
-
+        
+        if len(html_soup.find_all('amount')) == 2:
+            rental_val = html_soup.find_all('amount')[1].text
+            dict['rent'] = rental_val
+     
         if i == 0:
             deep_search_df = pd.DataFrame(dict, index=[0])
         else:
             deep_search_df = deep_search_df.append(dict, ignore_index=True)
-        
+
+
     deep_search_df = clean_api_dataframe(deep_search_df)
-    append_suburbs_rent_column(deep_search_df)
+    deep_search_df['rentPerUnit'] = deep_search_df['rent'] / deep_search_df['bedrooms']
+    deep_search_df['totalMonthlyIncome'] = deep_search_df['rentPerUnit'] * deep_search_df['bedrooms']
     mortgage_details(deep_search_df)
     one_year_nwroi(deep_search_df)
 
@@ -135,51 +141,10 @@ def deep_search_sample(df):
 def clean_api_dataframe(df):
 
     # convert string columns to numeric floats
-    to_numeric = ['amount', 'bedrooms', 'latitude', 'longitude']
+    to_numeric = ['amount', 'bedrooms', 'latitude', 'longitude', 'rent']
 
     for col in to_numeric:
         df[col] = pd.to_numeric(df[col], errors='coerce')
-
-    return df
-
-
-def create_rental_dfs(filename):
-    rentals_df = pd.read_csv(filename, encoding='latin-1')
-
-    suburb_cities = ['Thornton', 'Centennial', 'Aurora', 'Boulder', 'Broomfield']
-
-    co_rentals = rentals_df[rentals_df['State']=='CO']
-    
-    all_rent_df = pd.DataFrame(co_rentals[co_rentals['RegionName']== 'Denver'])
-    for city in suburb_cities:
-        all_rent_df = all_rent_df.append(co_rentals[co_rentals['RegionName']== city])
-
-    columns = ['Date', 'RegionName', 'State', 'Zri']
-    all_rent_df = all_rent_df[columns]
-
-    # clean RegionName
-    # all_rent_df['RegionName'] = all_rent_df['RegionName'].apply(lambda x: x.lower())
-
-    all_rent_df.reset_index(drop=True, inplace=True)
-
-    return all_rent_df
-
-def append_suburbs_rent_column(df):
-    
-    suburb_cities = ['Thornton', 'Centennial', 'Aurora', 'Boulder', 'Broomfield']
-
-    # sort and set
-    suburbs_cities = suburb_cities.sort()
-    df.sort_values(by='city', inplace=True)
-    rentals_df.sort_values(by='RegionName', inplace=True)
-    rental_val = rentals_df['Zri']
-    rental_val.reset_index(drop=True, inplace=True)
-    
-    # append rentZestimate
-    for idx, city in enumerate(suburb_cities):
-        df.loc[df['city']==city, 'rent'] = rental_val[idx]
-        df['rentPerUnit'] = df['rent'] / df['bedrooms']
-        df['totalMonthlyIncome'] = df['rentPerUnit'] * df['bedrooms']
 
     return df
 
@@ -200,12 +165,13 @@ def mortgage_details(df, downPayment=0.035, interestRate=0.0366,\
     df['taxRate'] = taxRate
     df['insuranceRate'] = insuranceRate
 
-    df['monthlyInterest'] = (df['amount'] * interestRate) / 12
+    
+    df['monthlyInterest'] = (df['loanAmount'] * interestRate) / 12
     df['monthlyPrincipal'] = df['monthlyInterest'] * 0.45
     df['monthlyP&I'] = df['monthlyInterest'] + df['monthlyPrincipal']
     df['monthlyTaxes'] = (df['amount'] * taxRate) / 12
     df['monthlyInsurance'] = (df['amount'] * interestRate) / 12
-    df['monthlyPMI'] = (df['amount'] * pmiRate) / 12
+    df['monthlyPMI'] = (df['loanAmount'] * pmiRate) / 12
     df['subTotalMonthlyPayment'] = df['monthlyP&I'] + df['monthlyTaxes'] +\
                                 df['monthlyInsurance'] + df['monthlyPMI']
     df['vacancy'] = vacancy
@@ -269,7 +235,7 @@ if __name__ == "__main__":
 
     # denver - urban
     urban_denver_df = spark_df('/home/jovyan/work/code/dsi/capstone-I/data/urban/urbanAddresses.csv')
-    urban_denver_df = address_sample_df(urban_denver_df, 'FULL_ADDRESS', 'denver', sample=1000)
+    urban_denver_df = address_sample_df(urban_denver_df, 'FULL_ADDRESS', 'denver', sample=50)
 
     # concat suburban dfs
     suburbs = [centennial_df, thornton_df, broomfield_df, boulder_df, aurora_df]
@@ -277,14 +243,16 @@ if __name__ == "__main__":
 
 
     # rental df
-    rentals_df = create_rental_dfs('/home/jovyan/work/code/dsi/capstone-I/data/rentals/City_Zri_AllHomesPlusMultifamily_Summary.csv')
+    # rentals_df = create_rental_dfs('/home/jovyan/work/code/dsi/capstone-I/data/rentals/City_Zri_AllHomesPlusMultifamily_Summary.csv')
 
 
     # testing functions
-    # suburbs_df = deep_search_sample(suburbs_df)
+    
     suburbs_df = deep_search_sample(suburbs_df)
     urban_denver_df = deep_search_sample(urban_denver_df)
-    print('all finished')    
+    print('all finished')
+
+    
 
 
 
