@@ -10,6 +10,51 @@ import datetime as dt
 import os 
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+import matplotlib
+
+plt.style.use('ggplot')
+
+def ztest():
+    mu = urban_denver_df['totalMonthlyIncome'].mean()
+    sigma = np.sqrt(urban_denve_df['totalMonthlyIncome'].var())
+    x_bar = suburbs_df['totalMonthlyIncome'].mean()
+
+    alpha = 0.05
+    z = (x_bar - mu)/ sigma
+    print(f'The Z statistic is {z:0.02f}.')
+
+    dist = stats.norm(mu, sigma)
+    totalMonthlyIncome = np.linspace(dist.ppf(0.01), dist.ppf(0.99), 100)
+    pdf_monthlyIncome = dist.pdf(totalMonthlyIncome)
+
+    fig, ax = plt.subplots(2, 1)
+    ax[0,0].plot(totalMonthlyIncome, pdf_monthlyIncome, label='population mean monthly income dist.')
+    ax[0,0].axvline(x_bar, color='green', label='sample mean dist.')
+    ax[0,0].legend(loc='best')
+    ax[0,0].set_title('comparison of population distribution with measured value.')
+    ax[0,0].set_xlabel('Monthly Income')
+    ax[0,0].set_ylabel('probability density');
+    ax[0,0].savefig('ztest_urban_vs_suburban_pdf.png')
+
+    p = 1 - dist.cdf(x_bar)
+    print("The probaility of these results, or more extreme results, given the \
+           null hypothesis is true is {0:0.2f}".format(p))
+    
+    cdf_monthlyIncome = dist.cdf(totalMonthlyIncome)
+    ax[1,0].plot(totalMonthlyIncome, cdf_monthlyIncome, label='population mean monthly income')
+    ax[1,0].axvline(x_bar, color='green', label='sample mean dist.')
+    ax[1,0].legend(loc='best')
+    ax[1,0].set_title('cumulative distribution'.)
+    ax[1,0].set_xlabel('Monthly Income')
+    ax[1,0].set_ylabel('cdf');
+    ax[1,0].savefig('ztest_urban_suburban_cdf.png')
+
+    if p <= alpha:
+        print('Reject Null, the monthly income for suburban is greater than the population.')
+    else:
+        print('Cannot reject Null, the monthly income for urban could have come from the population.')
 
 
 def address_sample_df(df, addressColumn, city, state='co', filterDict={}, replaceColumnName='address', sample=100, seed=463):
