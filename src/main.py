@@ -13,51 +13,81 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import matplotlib
+import geopandas
+
+
 
 plt.style.use('ggplot')
 
+def bar_plot_means(urban_df, suburb_df, col):
+
+    urban_mean = urban_df[col].mean()
+    suburban_mean = suburb_df[col].mean()
+    # breakpoint()
+    fig, ax = plt.subplots(figsize=(12,8))
+    width = 0.4
+    xlocs = np.arange(len(urban_mean))
+    ax.bar(xlocs-width, urban_mean, width, label='Urban Homes')
+    ax.bar(xlocs, suburban_mean, width, label='Suburban Homes')
+
+    ax.set_xticks(ticks=range(len(urban_mean)))
+    ax.set_xticklabels(col)
+    ax.yaxis.grid(True)
+    ax.legend(loc='best')
+    ax.set_ylabel(f'Mean {col} of homes')
+    ax.set_title(f'{col} for Urban vs. Suburban homes')
+    fig.tight_layout(pad=1)
+    fig.savefig(f'{col}_urban_suburban.png', dpi=125)
+    plt.close('all')
+
 def ztest():
-    mu = urban_denver_df['totalMonthlyIncome'].mean()
-    sigma = np.sqrt(urban_denve_df['totalMonthlyIncome'].var())
-    x_bar = suburbs_df['totalMonthlyIncome'].mean()
+
+    h_null = urban_denver_df.sample(100)
+    h_alt = suburbs_df.sample(100)
+
+    mu = h_null['monthlyCashFlow'].mean()
+    sigma = np.sqrt(h_null['monthlyCashFlow'].var())
+    x_bar = h_alt['monthlyCashFlow'].mean()
 
     alpha = 0.05
     z = (x_bar - mu)/ sigma
-    print(f'The Z statistic is {z:0.02f}.')
+    print(f'The Z statistic for suburban homes is {z:0.02f}.')
 
     dist = stats.norm(mu, sigma)
-    totalMonthlyIncome = np.linspace(dist.ppf(0.01), dist.ppf(0.99), 100)
-    pdf_monthlyIncome = dist.pdf(totalMonthlyIncome)
+    totalMonthlyCashFlow = np.linspace(dist.ppf(0.01), dist.ppf(0.99), 100)
+    pdf_monthlyCashFlow = dist.pdf(totalMonthlyCashFlow)
 
-    fig, ax = plt.subplots(2, 1)
-    ax[0,0].plot(totalMonthlyIncome, pdf_monthlyIncome, label='population mean monthly income dist.')
-    ax[0,0].axvline(x_bar, color='green', label='sample mean dist.')
-    ax[0,0].legend(loc='best')
-    ax[0,0].set_title('comparison of population distribution with measured value.')
-    ax[0,0].set_xlabel('Monthly Income')
-    ax[0,0].set_ylabel('probability density');
-    ax[0,0].savefig('ztest_urban_vs_suburban_pdf.png')
+    fig, ax = plt.subplots(2, 1, figsize=(12,8))
+    ax[0].plot(totalMonthlyCashFlow, pdf_monthlyCashFlow, label='Urban home mean monthly cash flow dist.')
+    ax[0].axvline(x_bar, color='green', label='Suburban sample mean dist.')
+    ax[0].legend(loc='best')
+    ax[0].set_title('Comparison of urban homes and suburban homes population distribution.')
+    ax[0].set_xlabel('Monthly Cash Flow')
+    ax[0].set_ylabel('Pdf');
+    plt.savefig('ztest_urban_vs_suburban_pdf.png')
+
+    fig.subplots_adjust(hspace=0.9)
 
     p = 1 - dist.cdf(x_bar)
-    print("The probaility of these results, or more extreme results, given the \
+    print("The probaility of these results, or more extreme, given the \
            null hypothesis is true is {0:0.2f}".format(p))
     
-    cdf_monthlyIncome = dist.cdf(totalMonthlyIncome)
-    ax[1,0].plot(totalMonthlyIncome, cdf_monthlyIncome, label='population mean monthly income')
-    ax[1,0].axvline(x_bar, color='green', label='sample mean dist.')
-    ax[1,0].legend(loc='best')
-    ax[1,0].set_title('cumulative distribution'.)
-    ax[1,0].set_xlabel('Monthly Income')
-    ax[1,0].set_ylabel('cdf');
-    ax[1,0].savefig('ztest_urban_suburban_cdf.png')
+    cdf_monthlyCashFlow = dist.cdf(totalMonthlyCashFlow)
+    ax[1].plot(totalMonthlyCashFlow, cdf_monthlyCashFlow, label='Urban home mean monthly cash flow income.')
+    ax[1].axvline(x_bar, color='green', label='Suburban home sample mean dist.')
+    ax[1].legend(loc='best')
+    ax[1].set_title('Cumulative Distribution.')
+    ax[1].set_xlabel('Monthly Cash Flow')
+    ax[1].set_ylabel('cdf');
+    plt.savefig('ztest_urban_suburban_cdf.png')
 
     if p <= alpha:
-        print('Reject Null, the monthly income for suburban is greater than the population.')
+        print('Reject Null, the monthly cash flow for suburban homes are greater than urban homes.')
     else:
-        print('Cannot reject Null, the monthly income for urban could have come from the population.')
+        print('Cannot reject Null, the monthly cash flow for suburban homes are not significantly greater than urban homes.')
 
 
-def address_sample_df(df, addressColumn, city, state='co', filterDict={}, replaceColumnName='address', sample=100, seed=463):
+def address_sample_df(df, addressColumn, city, state='co', filterDict={}, replaceColumnName='address', sample=50, seed=463):
     ''' 
     column is the address column: address STRtype
     expecting a dictionary for filter of: {columnName: columnsValue}
@@ -176,12 +206,18 @@ def deep_search_sample(df):
 
 
     deep_search_df = clean_api_dataframe(deep_search_df)
-    deep_search_df['rentPerUnit'] = deep_search_df['rent'] / deep_search_df['bedrooms']
+    deep_search_df = deep_search_df[deep_search_df['bedrooms'] > 1]
+    deep_search_df['rentPerUnit'] = deep_search_df['rent'] / (deep_search_df['bedrooms'] - 1)
     deep_search_df['totalMonthlyIncome'] = deep_search_df['rentPerUnit'] * deep_search_df['bedrooms']
+
     mortgage_details(deep_search_df)
     one_year_nwroi(deep_search_df)
+    
+    deep_search_df = deep_search_df.dropna()
+
 
     return deep_search_df
+
 
 def clean_api_dataframe(df):
 
@@ -196,7 +232,7 @@ def clean_api_dataframe(df):
 
 def mortgage_details(df, downPayment=0.035, interestRate=0.0366,\
                      pmiRate=0.01, loanTerms_years=30, paymentsPerYear=12,\
-                     taxRate=0.01, insuranceRate=0.005, vacancy=100,\
+                     taxRate=0.008, insuranceRate=0.005, vacancy=100,\
                      capitalExpenditures=100, maintenance=100):
     '''
     creates mortgage detail columns
@@ -215,7 +251,7 @@ def mortgage_details(df, downPayment=0.035, interestRate=0.0366,\
     df['monthlyPrincipal'] = df['monthlyInterest'] * 0.45
     df['monthlyP&I'] = df['monthlyInterest'] + df['monthlyPrincipal']
     df['monthlyTaxes'] = (df['amount'] * taxRate) / 12
-    df['monthlyInsurance'] = (df['amount'] * interestRate) / 12
+    df['monthlyInsurance'] = (df['amount'] * insuranceRate) / 12
     df['monthlyPMI'] = (df['loanAmount'] * pmiRate) / 12
     df['subTotalMonthlyPayment'] = df['monthlyP&I'] + df['monthlyTaxes'] +\
                                 df['monthlyInsurance'] + df['monthlyPMI']
@@ -242,7 +278,7 @@ def one_year_nwroi(df, rehabCost=20000, closingCosts=0.02, appreciation=0.06):
     df['yearlyLoanPaydown'] = df['monthlyPrincipal'] * 12
     df['appreciationAmount'] = df['amount'] * appreciation
 
-    df['oneYearNWROI'] = (df['monthlyCashFlow'] +\
+    df['oneYearNWROI'] = (((df['monthlyCashFlow'] + df['rentPerUnit']) * 12) +\
                           df['yearlyLoanPaydown'] +\
                           df['appreciationAmount']) /\
                           df['initialInvestment']
@@ -280,7 +316,7 @@ if __name__ == "__main__":
 
     # denver - urban
     urban_denver_df = spark_df('/home/jovyan/work/code/dsi/capstone-I/data/urban/urbanAddresses.csv')
-    urban_denver_df = address_sample_df(urban_denver_df, 'FULL_ADDRESS', 'denver', sample=50)
+    urban_denver_df = address_sample_df(urban_denver_df, 'FULL_ADDRESS', 'denver', sample=250)
 
     # concat suburban dfs
     suburbs = [centennial_df, thornton_df, broomfield_df, boulder_df, aurora_df]
@@ -295,8 +331,19 @@ if __name__ == "__main__":
     
     suburbs_df = deep_search_sample(suburbs_df)
     urban_denver_df = deep_search_sample(urban_denver_df)
-    print('all finished')
+    ztest()
 
+    # columns = ['bedrooms', 'amount', 'rent', 'rentPerUnit', 'initialInvestment', 'monthlyCashFlow', 'oneYearNWROI']
+
+    # for col in columns:
+    #     bar_plot_means(urban_denver_df, suburbs_df, col)
+
+    colorado_map = geopandas.read_file('tl_2016_08_cousub.shp')
+    fig, ax = plt.subplots(figsize=(12,8))
+    colorado_map.plot(ax=ax, alpha=0.5, edgecolor='k');
+    suburbs_geo = suburbs_df.iloc[:, :6]
+    suburbs_geo = geopandas.GeoDataFrame(
+    suburbs_geo, geometry=geopandas.points_from_xy(suburbs_geo.longitude, suburbs_geo.latitude))
     
 
 
