@@ -83,7 +83,41 @@ def denver_map():
         folium.Circle(location=[point[0], point[1]], color='red', radius=2).add_to(denver_map)
 
 
+def cashflow_scatters(sub, urb, y_col, x_col='monthlyCashFlow' ):
+
+    x1 = sub[x_col]
+    y1 = suburbs_df[y_col]
+
+    fig, ax = plt.subplots(2,1,figsize=(12,8))
+    ax[0].scatter(x1,y1, alpha=0.5, color='orchid')
+    ax[0].set_xlabel(x_col)
+    ax[0].set_title(f'{x_col} over {y_col} for suburban homes')
+    ax[0].set_ylabel(y_col)
+    ax[0].grid(True)
+    fig.tight_layout(pad=1)
+    fig.subplots_adjust(hspace=0.6)
+
+
+    x2 = urb[x_col]
+    y2 = urb[y_col]
+    ax[1].scatter(x2,y2, alpha=0.5, color='orchid')
+    ax[1].set_xlabel(x_col)
+    ax[1].set_title(f'{x_col} over {y_col} for urban homes')
+    ax[1].set_ylabel(f'{y_col}')
+    ax[1].grid(True)
+    plt.savefig(f'{x_col}_over_{y_col}_suburbs_urban.png')
+    
+
+
+
 if __name__ == '__main__':
     col = ['amount', 'rent', 'rentPerUnit', 'initialInvestment', 'monthlyCashFlow', 'oneYearNWROI']
     scatter_matrix(urban_denver_df[col], figsize=(12,15))
     scatter_matrix(suburbs_df[col], figsize=(12,5))
+    
+    y_col = ['amount', 'rent', 'rentPerUnit', 'initialInvestment', 'monthlyCashFlow', 'oneYearNWROI']
+
+    for y in y_col:
+        cashflow_scatters(suburbs_df, urban_denver_df, y)
+    
+    
