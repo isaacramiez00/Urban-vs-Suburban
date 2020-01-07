@@ -13,7 +13,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import matplotlib
-import geopandas
+import folium
+
 
 
 
@@ -331,20 +332,63 @@ if __name__ == "__main__":
     
     suburbs_df = deep_search_sample(suburbs_df)
     urban_denver_df = deep_search_sample(urban_denver_df)
-    ztest()
+    # ztest()
 
     # columns = ['bedrooms', 'amount', 'rent', 'rentPerUnit', 'initialInvestment', 'monthlyCashFlow', 'oneYearNWROI']
 
     # for col in columns:
     #     bar_plot_means(urban_denver_df, suburbs_df, col)
 
-    colorado_map = geopandas.read_file('tl_2016_08_cousub.shp')
-    fig, ax = plt.subplots(figsize=(12,8))
-    colorado_map.plot(ax=ax, alpha=0.5, edgecolor='k');
-    suburbs_geo = suburbs_df.iloc[:, :6]
-    suburbs_geo = geopandas.GeoDataFrame(
-    suburbs_geo, geometry=geopandas.points_from_xy(suburbs_geo.longitude, suburbs_geo.latitude))
-    
+    denver_map = folium.Map(location=[39.73782,-104.971338],
+                        zoom_start=10,
+                        tiles="Cartodbpositron")
+    locations = suburbs_df[['latitude', 'longitude']]
+    locationlist = locations.values.tolist()
+    urban_locations = urban_denver_df[['latitude', 'longitude']]
+    urban_locationlist = urban_locations.values.tolist()
+
+    for point in locationlist:
+        folium.Circle(location=[point[0], point[1]], color='blue', radius=2).add_to(denver_map)
+    for point in urban_locationlist:
+        folium.Circle(location=[point[0], point[1]], color='red', radius=2).add_to(denver_map)
+
+before = suburbs_df['bedrooms']
+after = urban_denver_df['bedrooms']
+
+fig, ax = plt.subplots(figsize=(8,5))
+width = 0.4
+xlocs = np.arange(len(before))
+ax.bar(xlocs-width, before, width, label='Suburban')
+ax.bar(xlocs, after, width, label='Urban')
+
+# bar chart of bedrooms
+before  = suburbs_df['bedrooms'].value_counts()
+after = urban_denver_df['bedrooms'].value_counts()
+bedrooms = pd.concat([before, after], axis=1)
+
+# udpated before/after var
+before = bedrooms.iloc[:,0]
+after = bedrooms.iloc[:,1]
+
+ax.set_xticks(ticks=range(len(before)))
+ax.yaxis.grid(True)
+
+before = bedrooms.iloc[:,0]
+after = bedrooms.iloc[:,1]
+labels = bedrooms.index
+
+fig, ax = plt.subplots(figsize=(8,5))
+width = 0.4
+xlocs = np.arange(len(before))
+ax.bar(xlocs-width, before, width, label='Suburban')
+ax.bar(xlocs, after, width, label='Urban')
+ax.set_xticks(ticks=range(len(before)))
+ax.set_xticklabels(labels)
+ax.yaxis.grid(True)
+ax.legend(loc='best')
+ax.set_ylabel('Mean Group result')
+ax.set_title('Number of bedrooms of Urban and suburban homes')
+fig.tight_layout(pad=1)
 
 
 
