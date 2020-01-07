@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from pandas.plotting import scatter_matrix
 
 def plot_histograms(sub, urb, col=col):
     col = ['amount', 'rent', 'rentPerUnit', 'initialInvestment', 'monthlyCashFlow', 'oneYearNWROI']
@@ -80,3 +81,9 @@ def denver_map():
         folium.Circle(location=[point[0], point[1]], color='blue', radius=2).add_to(denver_map)
     for point in urban_locationlist:
         folium.Circle(location=[point[0], point[1]], color='red', radius=2).add_to(denver_map)
+
+
+if __name__ == '__main__':
+    col = ['amount', 'rent', 'rentPerUnit', 'initialInvestment', 'monthlyCashFlow', 'oneYearNWROI']
+    scatter_matrix(urban_denver_df[col], figsize=(12,15))
+    scatter_matrix(suburbs_df[col], figsize=(12,5))
