@@ -6,7 +6,7 @@ import folium
 
 
 # I WAS WORKING HERE BUT NEED TO FINISH README
-def plot_side_by_side_hist(suburban_df, urban_df):
+def plot_side_by_side_hist(sub, urb):
     feature_columns = ['amount', 'rent', 'rentPerUnit', 'initialInvestment', 'monthlyCashFlow', 'oneYearNWROI']
     
     for i in feature_columns:
@@ -117,12 +117,12 @@ if __name__ == '__main__':
     # suburbs_df = pd.read_csv('/Users/isaacramirez/code/dsi/capstone-I/data/zillowQuerySuburb.csv')
     # urban_denver_df = pd.read_csv('/Users/isaacramirez/code/dsi/capstone-I/data/zillowQueryUrban.csv')
 
-    suburbs_zillow_df = pd.read_csv('/home/jovyan/work/code/dsi/capstone-I/data/zillow_api/suburbanZillowQuery.csv')
-    urban_denver_zillow_df = pd.read_csv('/home/jovyan/work/code/dsi/capstone-I/data/zillow_api/urbanZillowQuery.csv')
+    suburbs_zillow_df = pd.read_csv('/Users/isaacramirez/code/dsi/capstone-I/data/zillow_api/suburbanZillowQuery.csv')
+    urban_denver_zillow_df = pd.read_csv('/Users/isaacramirez/code/dsi/capstone-I/data/zillow_api/urbanZillowQuery.csv')
 
     # denver_map()
-    # plot_histograms(suburbs_df, urban_denver_df)
-    # create_bar_charts(suburbs_df, urban_denver_df)
+    plot_side_by_side_hist(suburbs_zillow_df, urban_denver_zillow_df)
+    create_bar_charts(suburbs_zillow_df, urban_denver_zillow_df)
     # y_col = ['amount', 'rent', 'rentPerUnit', 'initialInvestment', 'monthlyCashFlow', 'oneYearNWROI']
 
     # for y in y_col:

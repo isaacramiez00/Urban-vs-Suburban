@@ -5,7 +5,7 @@
 1. Overview/Background
 2. Project Questions/Goal
 3. Data
-4. EDA
+4. Exporatory Data Analysis (EDA)
 5. Analysis
 6. Conclusion
 7. References
@@ -72,18 +72,19 @@ The final dataset consist of 894 rows and 41 columns for both urban and suburban
 ### Feature Columns
 To achieve my project goals I went deeper into these feature columns:
 
+e.g Suburbs dataset
+
 ![feature_columns](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/feature_columns.png)
 
-# Data Vizualization
+# Exploratory Data Analysis (EDA)
 
-These are the areas I sampled from to the API:
+Visible areas I sampled from the API:
 * Red - Suburban
 * Blue - Urban
 
 ![denverMap](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/denver_map.png)
 
-One of the following questions I wanted to explore was what property types are
-the most common among the to different communities.
+#### What are the most common property types in each living area?
 
 Based on our findings, we see Single Family Homes excess the greatest amount of
 property type followed by Townhouse with an average count difference of 758 for 
