@@ -98,24 +98,24 @@ I saved the API dataset to a csv file in my local machine.
 
 # Data Vizualization
 
-![denverMap](/Users/isaacramirez/code/dsi/capstone-I/img/denver_map.png)
+![denverMap](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/denver_map.png)
 
 
-![property_type](/Users/isaacramirez/code/dsi/capstone-I/img/usecode_urban_suburban.png)
+![property_type](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/usecode_urban_suburban.png)
 
-![bedrooms](/Users/isaacramirez/code/dsi/capstone-I/img/bedrooms_urban_suburban.png)
+![bedrooms](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/bedrooms_urban_suburban.png)
 
 ![amount](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/amount_hist_urban_suburb.png)
 
-![rent](/Users/isaacramirez/code/dsi/capstone-I/img/rent_hist_urban_suburb.png)
+![rent](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/rent_hist_urban_suburb.png)
 
-![rentPerUnit](/Users/isaacramirez/code/dsi/capstone-I/img/rentPerUnit_hist_urban_suburb.png)
+![rentPerUnit](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/rentPerUnit_hist_urban_suburb.png)
 
-![initialInvestment](/Users/isaacramirez/code/dsi/capstone-I/img/initialInvestment_hist_urban_suburb.png)
+![initialInvestment](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/initialInvestment_hist_urban_suburb.png)
 
-![NWROI](/Users/isaacramirez/code/dsi/capstone-I/img/monthlyCashFlow_hist_urban_suburb.png)
+![NWROI](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/monthlyCashFlow_hist_urban_suburb.png)
 
 # Hypothesis Test
 
-![hypoTest](/Users/isaacramirez/code/dsi/capstone-I/img/ztest_urban_suburban_cdf.png)
+![hypoTest](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/ztest_urban_suburban_cdf.png)
 
