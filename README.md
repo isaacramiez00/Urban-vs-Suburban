@@ -82,3 +82,40 @@ then chose the following:
 * Centennial
 * Aurora
 
+
+
+## Cleaning
+This was the part during my research I spend the most time on.
+The address datasets for each city contained around 70 to 80,000 rows so I started off
+using Spark. I had to clean up the addresses in the address dataset because plenty
+contained words the API could not read.
+
+Afterwards, I grabbed a random sample of 1000 for each population.
+(Urban and Suburban datasets) from here I then passed the each address to the API.
+The API returned to me an unstructed dataset so I had to shape and clean up the
+the features I wanted to use for my dataset to a structured dataset. Lastly,
+I saved the API dataset to a csv file in my local machine.
+
+# Data Vizualization
+
+![denverMap](/Users/isaacramirez/code/dsi/capstone-I/img/denver_map.png)
+
+
+![property_type](/Users/isaacramirez/code/dsi/capstone-I/img/usecode_urban_suburban.png)
+
+![bedrooms](/Users/isaacramirez/code/dsi/capstone-I/img/bedrooms_urban_suburban.png)
+
+![amount](/Users/isaacramirez/code/dsi/capstone-I/img/amount_hist_urban_suburb.png)
+
+![rent](/Users/isaacramirez/code/dsi/capstone-I/img/rent_hist_urban_suburb.png)
+
+![rentPerUnit](/Users/isaacramirez/code/dsi/capstone-I/img/rentPerUnit_hist_urban_suburb.png)
+
+![initialInvestment](/Users/isaacramirez/code/dsi/capstone-I/img/initialInvestment_hist_urban_suburb.png)
+
+![NWROI](/Users/isaacramirez/code/dsi/capstone-I/img/monthlyCashFlow_hist_urban_suburb.png)
+
+# Hypothesis Test
+
+![hypoTest](/Users/isaacramirez/code/dsi/capstone-I/img/ztest_urban_suburban_cdf.png)
+
