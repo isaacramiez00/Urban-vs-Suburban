@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import matplotlib
+import pandas as pd
+import numpy as np
 
 
 plt.style.use('ggplot')
@@ -8,8 +10,8 @@ plt.style.use('ggplot')
 # test
 def ztest():
 
-    h_null = urban_denver_df.sample(100)
-    h_alt = suburbs_df.sample(100)
+    h_null = urban_denver_df
+    h_alt = suburbs_df
 
     mu = h_null['monthlyCashFlow'].mean()
     sigma = np.sqrt(h_null['monthlyCashFlow'].var())
@@ -54,5 +56,8 @@ def ztest():
 
 
 if __name__ == "__main__":
+
+    suburbs_df = pd.read_csv('/home/jovyan/work/code/dsi/capstone-I/data/zillowQuerySuburb.csv')
+    urban_denver_df = pd.read_csv('/home/jovyan/work/code/dsi/capstone-I/data/zillowQueryUrban.csv')
     ztest()
 
