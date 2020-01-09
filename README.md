@@ -69,10 +69,10 @@ I had to create columns to analyze if the house was a good house hacking investm
 
 The final dataset consist of 894 rows and 41 columns for both urban and suburban populations. (Two seperate final datasets)
 
-#### Feature Columns
+### Feature Columns
 To achieve my project goals I went deeper into these feature columns:
 
-![feature_columns]
+![feature_columns](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/feature_columns.png)
 
 # Data Vizualization
 
