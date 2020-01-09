@@ -1,100 +1,78 @@
-# House Hacking In The Mile High
+# House Hacking Data Analysis
 
 
 # Table Of Contents
-1. Overview/ Background
-2. Questions
+1. Overview/Background
+2. Project Questions/Goal
 3. Data
 4. EDA
-5. Conclusion
-6. References
+5. Analysis
+6. Conclusion
+7. References
 
 
 
 # Overview/ Background
-What is House Hacking? In short, House hacking is the idea of when you buy a home and
-rent out the other bedrooms. Essentially, Roomates that help pay off your mortgage.
-House hacking has been around for quite some time and continues to be a trend for
-building passive income and great for long term real estate investing.
+House Hacking. What is that?
 
-What's great about doing a house hacking investment is that because you are living
-your home, you can put down an owner-occupied loan for as low as 3.5%! (FHA Loan).
-On top of that, with an FHA Loan, you are only required to live in you home for 1 year
-so what do you do? You Buy another house and do the same thing.
+In short, House hacking is when you buy a house, live in it, and rent out the other bedrooms (roomates that help pay your mortgage). 
 
-House Hacking is a great way to generate wealth.
+Why House Hack?
 
-Why am I interested in House Hacking?
+House hacking is a great real estate investment strategy to build passive income and generate wealth. The goal of house hacking is to
+cash flow(reference link) positively and live for free!
 
-As stated previously, I am looking to generate wealth and gain financial freedom.
-I want the opportunity to not have to work for the next 40 years just to scrape 
-by and save up for retirement. By analyzing the right deals and finding the
-right roomates, My goal is to build $10,000/month just on passive income in
-the next 10 years.
+Another pro to house hacking is since you are living in the property, can qualify for an owner-occupied loan (down payment as low as 3.5%
+- FHA Loan). With an FHA Loan, you are only required to live in the property for a year so after the first year,
+you buy another house hack and do the same thing.
 
-And so, the purpose for my research is to see the house hacking strategy be applied in
-Colorado.
+You can learn more about how to house hack here (link)
 
-# Questions
-In site of this research, a couple questions came in mind:
+# Project Questions/Goals
 
+My main goal for this project was to answer the following question:
 
-* Most common property yypes
-* Most common number Of bedrooms
-* Average amount
-* Rent 
-* Rent per Unit
-* Initial Investment
-* One Year Net Worth Return on Investment
-* Monthly Cash Flow
+Are suburban homes a better house hacking investment than urban area homes?
 
-I was curious in particular whether Suburban are a better Investment than Urban Homes.
-Before performing a hypothesis test, my guess (Alternative Hypothesis) is that Suburban
-homes are a better investment than urban homes for a house hacking strategy.
+Other curiousities I had among suburban areas and urban areas were:
 
-Here's Why:
+* What are the most common property types in each? (Property type and Number of Units/bedrooms)
+* What are the average purchase prices for each living area?
+* Average rent?
+* Average rent per unit/bedroom?
+* Average initial investment?
+* Average One Year Net Worth Return on Investment and Monthly Cash Flow?
 
-* Suburban homes contain more single family homes which means more rooms to rent out
-* Becuase of Urban Homes popularity due to location, I assumed that urban home prices
-are more expensive than suburban homes
+# The Data
+The data for this project consist a variety of datasets.
 
-# Data
-The way I broke out the distinguishment between Urban Homes and Suburban Homes was I checkout 
-https://www.liveurbandenver.com/ Where the website breaks up what's consider
-Urban and Suburban. In conclusion, Urban Homes are considered the city of Denver and
-Suburban are listed here https://www.liveurbandenver.com/ (Suburban neighbothood).
+I used Zillow's Get Deep Search Results API for my final dataset and the parameters consist of the address of the home. Therefore,
+I needed to gather and collect the addresses from each city I was observing.
 
-## Preparing and getting the data
-Now that I know the distinguishment, I need a select which cities I wanted to sample from
-to answer my questions. 
-
-For my research, I was using Zillow's Get Deep Search results API. The parameters I
-needed to pass in to get the query was the address of the houses I was exploring. And
-so, I stared off by grabbing the addresses dataset of each city so I can then use it
-for the Zillow API. At first, I tried running a random selection from the list of
-Suburban homes to avoid any bias in my experiment but, as it find out, it was a
-challenge to find the address dataset from each city, as some did not have any so I
-then chose the following:
+Orignally I was going to randomly select from a list of suburban cities(https://www.liveurbandenver.com/) but found not many datasets
+of city address are public thus, used the follow available suburban city address datasets:
 
 * Thornton
 * Boulder
 * Broomfield
-* Centennial
 * Aurora
+* Centennial
 
+For my urban city dataset, I found that all of Denver(https://www.liveurbandenver.com/ ) is consider Urban. Therefore, only one Denver's
+addresses dataset was required for my urban population.
 
+### Data Wrangling
+The city address datasets and converting Zillow's API to a structured dataset was the most time comsuming. The columns for each address
+dataset were unique in their own way and there were filter words in the Addresses that the Zillow API could not comprehend, leading to
+lot's of null values. Thus, I had to go back and clean the string text to minimize the missing values for the API dataset. Lastly,
+I had to create columns to analyze if the house was a good house hacking investment.
 
-## Cleaning
-This was the part during my research I spend the most time on.
-The address datasets for each city contained around 70 to 80,000 rows so I started off
-using Spark. I had to clean up the addresses in the address dataset because plenty
-contained words the API could not read.
+The final dataset consist of 894 rows and 41 columns for both urban and suburban populations. (Two seperate final datasets)
 
-Afterwards, I grabbed a random sample of 1000 for each population.
-(Urban and Suburban datasets) from here I then passed the each address to the API.
-The API returned to me an unstructed dataset so I had to shape and clean up the
-the features I wanted to use for my dataset to a structured dataset. Lastly,
-I saved the API dataset to a csv file in my local machine.
+#### Feature Columns
+To achieve my project goals I went deeper into these feature columns:
+
+![feature_columns]
 
 # Data Vizualization
 
@@ -260,4 +238,8 @@ is a good investment for a house hack.
 
 # Reference
 Curelop, Craig. The House Hacking Strategy: How to Use Your Home to Achieve Financial Freedom. BiggerPockets Publishing, 2019.
+
+“Urban Area Info.” Live Urban Real Estate, www.liveurbandenver.com/areas/urban.
+
+“Suburban Area Info.” Live Urban Real Estate, www.liveurbandenver.com/areas/suburban.
 
