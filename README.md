@@ -105,7 +105,7 @@ I saved the API dataset to a csv file in my local machine.
 
 ![bedrooms](/Users/isaacramirez/code/dsi/capstone-I/img/bedrooms_urban_suburban.png)
 
-![amount](/Users/isaacramirez/code/dsi/capstone-I/img/amount_hist_urban_suburb.png)
+![amount](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/amount_hist_urban_suburb.png)
 
 ![rent](/Users/isaacramirez/code/dsi/capstone-I/img/rent_hist_urban_suburb.png)
 
