@@ -27,7 +27,7 @@ def ztest():
 
     fig, ax = plt.subplots(2, 1, figsize=(12,8))
     ax[0].plot(totalMonthlyCashFlow, pdf_monthlyCashFlow, color='#87CEEB', label='Urban home mean monthly cash flow dist.')
-    ax[0].axvline(x_bar, color='red', alpha=0.5, linestyle='--', label='Suburban sample mean dist.')
+    ax[0].axvline(x_bar, color='green', alpha=0.5, linestyle='--', label='Suburban sample mean dist.')
     ax[0].legend(loc='best')
     ax[0].set_title('Comparison of urban homes and suburban homes population distribution.')
     ax[0].set_xlabel('Monthly Cash Flow')
@@ -42,7 +42,7 @@ def ztest():
     
     cdf_monthlyCashFlow = dist.cdf(totalMonthlyCashFlow)
     ax[1].plot(totalMonthlyCashFlow, cdf_monthlyCashFlow,color='#87CEEB', label='Urban home mean monthly cash flow income.')
-    ax[1].axvline(x_bar, color='red', alpha=0.5, linestyle='--', label='Suburban home sample mean dist.')
+    ax[1].axvline(x_bar, color='green', alpha=0.5, linestyle='--', label='Suburban home sample mean dist.')
     ax[1].legend(loc='best')
     ax[1].set_title('Cumulative Distribution.')
     ax[1].set_xlabel('Monthly Cash Flow')
