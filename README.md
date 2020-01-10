@@ -70,7 +70,7 @@ dataset were unique in their own way and there were filter words in the address 
 lot's of null values. I had to go back and clean the string text to minimize the missing values for the API dataset. Lastly,
 I had to create new columns to analyze if the house was a good house hacking investment.
 
-![all_feature_columns](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/all_feature_columns.png)
+![all_feature_columns](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/master/img/all_feature_columns.png)
 
 The final dataset consist of 894 rows and 41 columns for both urban and suburban populations. (Two seperate datasets)
 
