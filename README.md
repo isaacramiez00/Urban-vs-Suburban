@@ -210,7 +210,7 @@ Reserves - Reserves are how much we are storing per month for vacancy, maintenan
 
 For suburban homes:
 
-* Avg monthly cash flow: $-14.03
+* Avg monthly cash flow: $-14.03 (This means you would still pay $14 to live where you do...Still a great deal!)
 
 Urban homes:
 
@@ -222,16 +222,23 @@ Urban homes:
 
 #### Are suburban homes a better investment than urban homes?
 
+Pre-Assumptions:
+Going into this project I had already had this hypothesis test in mind. Before going through EDA and performing my test, I initally
+thought suburban homes are a better investment than urban homes because I thought single family homes were more common in suburban homes
+than urban homes thus, more rooms to rent out. And, because urban areas are more populated possibly because of location and convenience,
+I thought Urban homes were going to be more expensive and thus higher monthly expense cost. 
+
+
 variables:
 * Null Hypothesis - Urban Homes outperform Suburban homes for a house hacking investment
 * Alternative Hypothesis - Suburban homes are a better house hacking investment than urban homes
 * alpha level: 0.05
-* z-statistic: 0.21
-* p-value: .42
+* z-statistic: -0.24
+* p-value: .60
 
 
-According to our findings below, we can see that our the Z statistic for suburban homes is 0.21.
-The probaility of having this z-statistic results, or more extreme, given the null hypothesis is true is 0.42.
+According to our findings below, we can see that our the Z statistic for suburban homes is -0.24.
+The probaility of having this z-statistic results, or more extreme, given the null hypothesis is true is 0.60.
 Therefore, we cannot reject the null, the monthly cash flow for suburban homes are not significantly greater than urban homes.
 
 
@@ -240,21 +247,22 @@ Therefore, we cannot reject the null, the monthly cash flow for suburban homes a
 # conclusion
 
 In conclusion, there is no significant difference between urban homes and suburban homes for a house hack. We also found that
-the most common types of property for both communities are 3 bedroom single family homes. The average purchase price for each
-home are above $500,000.
+the most common types of property for both living areas are 3 bedroom single family homes. The average purchase price for each
+home are above $550,000.
 
-The average initial investment for both communities are on average $50,000.
+The average initial investment for both communities are on average above $50,000.
 
-The average cashflow for a suburban home are $250/month
-The average cashlow for an urban home are $0 (Still a great things, you are not paying your mortgage. Essentially living for free!).
+The average cashflow for a suburban home is $-14/month, Which means you would still pay $14 to for your living situation.
+The average cashlow for an urban home is $250/month.
 
-The average Net Worth Return On Investment for both communties is at least 100% (impact the deal has on your networth
+The average Net Worth Return On Investment for both communties is at slightly above 100% (impact the deal has on your networth).
 
 #### In the Future
-For future research, I'd like to explore which property types each house cash flows
+In the future, I would like to answer if single family homes cash flow the most compare to the rest of property types.
 
-For the future I plan to work with a real estate agent and use this house hacking deal analysis to run calculations on whether this house
-is a good investment for a house hack.
+I would also like to explore more in depth what the minumum purchase,rent, and initial investment would be to break even on house hack.
+
+Lastly, explore which relationship has the stongest correlation of monthly cash flow.
 
 # Reference
 Curelop, Craig. The House Hacking Strategy: How to Use Your Home to Achieve Financial Freedom. BiggerPockets Publishing, 2019.
