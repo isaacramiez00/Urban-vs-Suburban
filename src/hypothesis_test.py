@@ -32,7 +32,7 @@ def ztest():
     ax[0].set_title('Comparison of urban homes and suburban homes population distribution.')
     ax[0].set_xlabel('Monthly Cash Flow')
     ax[0].set_ylabel('Pdf');
-    plt.savefig('ztest_urban_vs_suburban_pdf.png')
+    # plt.savefig('ztest_urban_vs_suburban_pdf.png')
 
     fig.subplots_adjust(hspace=0.9)
 
@@ -47,7 +47,7 @@ def ztest():
     ax[1].set_title('Cumulative Distribution.')
     ax[1].set_xlabel('Monthly Cash Flow')
     ax[1].set_ylabel('cdf');
-    plt.savefig('ztest_urban_suburban_cdf.png')
+    plt.savefig('ztest_urban_suburban.png')
 
     if p <= alpha:
         print('Reject Null, the monthly cash flow for suburban homes are greater than urban homes.')
@@ -57,7 +57,7 @@ def ztest():
 
 if __name__ == "__main__":
 
-    suburbs_df = pd.read_csv('/home/jovyan/work/code/dsi/capstone-I/data/zillowQuerySuburb.csv')
-    urban_denver_df = pd.read_csv('/home/jovyan/work/code/dsi/capstone-I/data/zillowQueryUrban.csv')
+    suburbs_df = pd.read_csv('/Users/isaacramirez/code/dsi/capstone-I/data/zillow_api/suburbanZillowQuery.csv')
+    urban_denver_df = pd.read_csv('/Users/isaacramirez/code/dsi/capstone-I/data/zillow_api/urbanZillowQuery.csv')
     ztest()
 
