@@ -19,14 +19,14 @@ In short, House hacking is when you buy a house, live in it, and rent out the ot
 
 Why House Hack?
 
-House hacking is a great real estate investment strategy to build passive income and generate wealth. The goal of house hacking is to
-cash flow(reference link) positively and live for free!
+House hacking is a great real estate investment strategy to build passive income and generate wealth. The goal of
+[house hacking](https://www.biggerpockets.com/blog/2013-11-02-hack-housing-get-paid-live-free) is to
+cash flow positively and live for free!
 
-Another pro to house hacking is since you are living in the property, can qualify for an owner-occupied loan (down payment as low as 3.5%
-- FHA Loan). With an FHA Loan, you are only required to live in the property for a year so after the first year,
+Another pro to house hacking is since you are living in the property, can qualify for an owner-occupied loan with a down payment
+as low as 3.5% (FHA Loan). With an FHA Loan, you are only required to live in the property for a year so after the first year,
 you buy another house hack and do the same thing.
 
-You can learn more about how to house hack here (link)
 
 # Project Questions/Goals
 
@@ -49,7 +49,7 @@ The data for this project consist a variety of datasets.
 I used Zillow's Get Deep Search Results API for my final dataset and the parameters consist of the address of the home. Therefore,
 I needed to gather and collect the addresses from each city I was observing.
 
-Orignally I was going to randomly select from a list of suburban cities(https://www.liveurbandenver.com/) but found not many datasets
+Orignally I was going to randomly select from a [list of suburban cities](https://www.liveurbandenver.com/areas/suburban) but found not many datasets
 of city address are public thus, used the follow available suburban city address datasets:
 
 * Thornton
@@ -58,7 +58,7 @@ of city address are public thus, used the follow available suburban city address
 * Aurora
 * Centennial
 
-For my urban city dataset, I found that all of Denver(https://www.liveurbandenver.com/ ) is consider Urban. Therefore, only one Denver's
+For my urban city dataset, I found that all of [Denver](https://www.liveurbandenver.com/areas/urban) is consider Urban. Therefore, only one Denver's
 addresses dataset was required for my urban population.
 
 ### Data Wrangling
@@ -79,7 +79,7 @@ e.g Suburbs dataset
 # Exploratory Data Analysis (EDA)
 
 Visible areas I sampled from the API:
-* Red - Suburban
+* Green - Suburban
 * Blue - Urban
 
 ![denverMap](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/denver_map.png)
