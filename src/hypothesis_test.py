@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 
-plt.style.use('ggplot')
+plt.style.use('seaborn')
 
 # test
 def ztest():
@@ -26,8 +26,8 @@ def ztest():
     pdf_monthlyCashFlow = dist.pdf(totalMonthlyCashFlow)
 
     fig, ax = plt.subplots(2, 1, figsize=(12,8))
-    ax[0].plot(totalMonthlyCashFlow, pdf_monthlyCashFlow, label='Urban home mean monthly cash flow dist.')
-    ax[0].axvline(x_bar, color='green', label='Suburban sample mean dist.')
+    ax[0].plot(totalMonthlyCashFlow, pdf_monthlyCashFlow, color='#87CEEB', label='Urban home mean monthly cash flow dist.')
+    ax[0].axvline(x_bar, color='red', alpha=0.5, linestyle='--', label='Suburban sample mean dist.')
     ax[0].legend(loc='best')
     ax[0].set_title('Comparison of urban homes and suburban homes population distribution.')
     ax[0].set_xlabel('Monthly Cash Flow')
@@ -36,20 +36,20 @@ def ztest():
 
     fig.subplots_adjust(hspace=0.9)
 
-    p = 1 - dist.cdf(x_bar)
-    print("The probaility of these results, or more extreme, given the \
-           null hypothesis is true is {0:0.2f}".format(p))
+    p_value = 1 - dist.cdf(x_bar)
+    print("The p-value of these results, or more extreme, given the \
+           null hypothesis is true is {0:0.2f}".format(p_value))
     
     cdf_monthlyCashFlow = dist.cdf(totalMonthlyCashFlow)
-    ax[1].plot(totalMonthlyCashFlow, cdf_monthlyCashFlow, label='Urban home mean monthly cash flow income.')
-    ax[1].axvline(x_bar, color='green', label='Suburban home sample mean dist.')
+    ax[1].plot(totalMonthlyCashFlow, cdf_monthlyCashFlow,color='#87CEEB', label='Urban home mean monthly cash flow income.')
+    ax[1].axvline(x_bar, color='red', alpha=0.5, linestyle='--', label='Suburban home sample mean dist.')
     ax[1].legend(loc='best')
     ax[1].set_title('Cumulative Distribution.')
     ax[1].set_xlabel('Monthly Cash Flow')
     ax[1].set_ylabel('cdf');
     plt.savefig('ztest_urban_suburban.png')
 
-    if p <= alpha:
+    if p_value <= alpha:
         print('Reject Null, the monthly cash flow for suburban homes are greater than urban homes.')
     else:
         print('Cannot reject Null, the monthly cash flow for suburban homes are not significantly greater than urban homes.')
