@@ -241,11 +241,11 @@ I thought urban homes were going to be more expensive and thus higher monthly ex
 
 
 One tail hypothesis test variables:
-* Null Hypothesis - Urban Homes outperform Suburban homes for a house hacking investment
-* Alternative Hypothesis - Suburban homes are a better house hacking investment than urban homes
-* alpha level: 0.05
-* z-statistic: -0.24
-* p-value: .60
+* **Null Hypothesis** - Urban Homes outperform Suburban homes for a house hacking investment
+* **Alternative Hypothesis** - Suburban homes are a better house hacking investment than urban homes
+* **alpha level**: 0.05
+* **z-statistic**: -0.24
+* **p-value**: .60
 
 
 According to our findings below, we can see that our the Z statistic for suburban homes is -0.24.
