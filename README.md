@@ -262,7 +262,7 @@ In the future, I would like to answer if single family homes cash flow the most 
 
 I would also like to explore more in depth what the minumum purchase,rent, and initial investment would be to break even on house hack.
 
-Lastly, explore which relationship has the stongest correlation of monthly cash flow.
+Lastly, explore which relationship has the stongest correlation with monthly cash flow.
 
 # Reference
 Curelop, Craig. The House Hacking Strategy: How to Use Your Home to Achieve Financial Freedom. BiggerPockets Publishing, 2019.
