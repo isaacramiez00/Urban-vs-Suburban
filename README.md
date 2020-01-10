@@ -130,7 +130,8 @@ Urban Homes:
 
 * Avg rent price: $2,257/month
 
-Comparing the two, their is no significant difference between the two communities.
+Comparing the two, their is no significant difference between the two communities. The histogram also shows to be heavily skewed
+for the high value homes that I would consider outliers. After analyzing this, I saw how this will affect the rest of my data.
 
 ![rent](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/rent_hist_urban_suburb.png)
 
@@ -271,6 +272,8 @@ The average NWROI for both communties is at slightly above 100% (impact the deal
 
 #### In the Future
 In the future, I would like to answer if single family homes cash flow the most compare to the rest of property types.
+
+I'd like to bootstrap and find the median of for all analysis next time to eliminate any skewdness.
 
 I would also like to explore more in depth what the minumum purchase,rent, and initial investment would be to break even on house hack.
 
