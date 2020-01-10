@@ -120,21 +120,21 @@ Comparing the two, their is no significant difference between the two communitie
 
 ![amount](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/amount_hist_urban_suburb.png)
 
-#### what are the average rent listings for homes in each community?
+#### what are the average rent/month listings for homes in each community?
 
 For suburban homes:
 
-* Avg rent price: $2,284
+* Avg rent price: $2,284/month
 
 Urban Homes:
 
-* Avg rent price: $2,257
+* Avg rent price: $2,257/month
 
 Comparing the two, their is no significant difference between the two communities.
 
 ![rent](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/rent_hist_urban_suburb.png)
 
-#### How much rent would each bedroom/unit be?
+#### How much rent would each bedroom/unit be per month?
 
 How did I go about calculating this?
 
@@ -145,11 +145,11 @@ Rent per unit = Total rent profit - (Number of bedrooms - 1)
 
 For suburban homes:
 
-* Avg rent price per unit: $1,189
+* Avg rent price per unit: $1,189/month
 
 Urban homes:
 
-* Avg rent price per unit: $1,424
+* Avg rent price per unit: $1,424/month
 
 Comparing the two living areas, urban homes can charge $300 dollars more per room. This makes sense possibly due to the high demand
 for location in urban areas.
@@ -220,11 +220,11 @@ Reserves - Reserves are how much we are storing per month for vacancy, maintenan
 
 For suburban homes:
 
-* Avg monthly cash flow: $-14.03 (This means you would still pay $14 to live where you do...Still a great deal!)
+* Avg monthly cash flow: $-14.03/month (This means you would still pay $14 to live where you do...Still a great deal!)
 
 Urban homes:
 
-* Avg monthly cash flow: $256.09
+* Avg monthly cash flow: $256.09/month
 
 ![monthlyCashFlow](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/monthlyCashFlow_hist_urban_suburb.png)
 
