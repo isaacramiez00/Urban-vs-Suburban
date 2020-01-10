@@ -116,7 +116,8 @@ Urban homes:
 
 * Avg purchase price: $556,602
 
-Comparing the two, their is no significant difference between the two communities.
+Comparing the two, their is no significant difference between the two communities. The histogram also shows to be heavily skewed
+for the high value homes that I would consider outliers. After analyzing this, I saw how this will affect the rest of my data.
 
 ![amount](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/amount_hist_urban_suburb.png)
 
@@ -130,8 +131,7 @@ Urban Homes:
 
 * Avg rent price: $2,257/month
 
-Comparing the two, their is no significant difference between the two communities. The histogram also shows to be heavily skewed
-for the high value homes that I would consider outliers. After analyzing this, I saw how this will affect the rest of my data.
+Comparing the two, their is no significant difference between the two communities.
 
 ![rent](https://github.com/isaacramiez00/Urban-vs-Suburban/blob/develop/img/rent_hist_urban_suburb.png)
 
